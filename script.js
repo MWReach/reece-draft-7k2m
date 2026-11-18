@@ -61,28 +61,41 @@
     });
   }
 
-  // Enquiry form (Web3Forms). Until the access key is added, the form tells people to call or WhatsApp.
+  // Enquiry form. If a Web3Forms key is set it sends straight to the inbox. Until then it prepares the
+  // enquiry so the customer can send it in one tap by WhatsApp or email (both work with no third party).
   var form = doc.getElementById('enq');
   if (form) {
     var note = doc.getElementById('note');
-    var say = function (t, ok) { note.className = 'msg' + (ok ? ' ok' : ''); note.textContent = t; note.hidden = false; };
+    var PHONE = '07730 512061', WAURL = 'https://wa.me/447730512061', MAIL = 'info@reecelandscapes.co.uk';
+    var clear = function () { while (note.firstChild) note.removeChild(note.firstChild); };
+    var say = function (t, ok) { clear(); note.className = 'msg' + (ok ? ' ok' : ''); note.appendChild(doc.createTextNode(t)); note.hidden = false; note.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+    var addLink = function (label, href, cls) { var a = doc.createElement('a'); a.className = cls; a.href = href; a.textContent = label; note.appendChild(a); };
+    var offer = function (f) {
+      var lines = ['Hi Reece Landscapes, I would like a quote.', '', 'Name: ' + f.name.value, 'Phone: ' + f.phone.value];
+      if (f.email.value) lines.push('Email: ' + f.email.value);
+      if (f.message.value) lines.push('', 'What I would like done: ' + f.message.value);
+      var text = lines.join('\n');
+      clear(); note.className = 'msg ok'; note.hidden = false;
+      var b = doc.createElement('b'); b.textContent = 'Thanks ' + f.name.value + '. Your enquiry is ready. Choose how to send it:'; note.appendChild(b);
+      addLink('Send by WhatsApp', WAURL + '?text=' + encodeURIComponent(text), 'btn');
+      addLink('Send by email', 'mailto:' + MAIL + '?subject=' + encodeURIComponent('Quote enquiry from ' + f.name.value) + '&body=' + encodeURIComponent(text), 'btn dark');
+      var p = doc.createElement('span'); p.style.cssText = 'display:block;margin-top:10px;font-size:14px'; p.textContent = 'Or call us on ' + PHONE + '.'; note.appendChild(p);
+      note.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    };
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var key = form.querySelector('[name=access_key]').value;
-      if (!key || key.indexOf('ACCESS_KEY') > -1) {
-        say('The online form is not switched on yet. Please call 07730 512061 or message us on WhatsApp and we will get straight back to you.', false);
-        return;
-      }
       if (form.querySelector('[name=botcheck]').checked) return;
+      var key = form.querySelector('[name=access_key]').value;
+      if (!key || key.indexOf('ACCESS_KEY') > -1) { offer(form); return; }
       var btn = form.querySelector('button[type=submit]');
       btn.disabled = true; btn.textContent = 'Sending...';
       fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) })
         .then(function (r) { return r.json(); })
         .then(function (j) {
-          if (j.success) { form.reset(); say('Thank you. We have your enquiry and will be in touch soon.', true); }
-          else { say('Sorry, that did not send. Please call 07730 512061 or message us on WhatsApp.', false); }
+          if (j.success) { say('Thank you. We have your enquiry and will be in touch soon.', true); form.reset(); }
+          else { offer(form); }
         })
-        .catch(function () { say('Sorry, that did not send. Please call 07730 512061 or message us on WhatsApp.', false); })
+        .catch(function () { offer(form); })
         .then(function () { btn.disabled = false; btn.textContent = 'Send my enquiry'; });
     });
   }

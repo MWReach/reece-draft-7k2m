@@ -332,3 +332,5 @@ footer .fcols div>a{display:inline-block;padding:3px 0}
  .hero h1{font-size:clamp(42px,12vw,64px)}
 }
 @media (max-width:520px){footer .fcols{grid-template-columns:1fr}}
+.prose .quote{color:#2a2f33}
+.prose .quote cite{color:var(--bronze-d)}

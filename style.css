@@ -285,7 +285,7 @@ h3{line-height:1.15}
 .btn:hover:after{transform:translateX(5px)}
 .menubtn:after,.filters button:after,.sticky a:after,form .btn[disabled]:after,.side .btn:after{content:none}
 .callnow{font-weight:700;letter-spacing:.06em;border-radius:0}
-.brand img{height:62px;filter:drop-shadow(0 1px 8px rgba(0,0,0,.45))}
+.brand img{height:88px;filter:drop-shadow(0 1px 8px rgba(0,0,0,.45))}
 nav.main a{font-weight:600;letter-spacing:.14em}
 .badges{background:#fff}
 .badges img{filter:none}
@@ -328,9 +328,11 @@ footer .fcols div>a{display:inline-block;padding:3px 0}
  footer .fcols>div:first-child{grid-column:1/-1}
  .strip{grid-template-columns:1fr}
  .phero{padding:130px 0 56px}
- .brand img{height:52px}
+ .brand img{height:68px}
  .hero h1{font-size:clamp(42px,12vw,64px)}
 }
 @media (max-width:520px){footer .fcols{grid-template-columns:1fr}}
 .prose .quote{color:#2a2f33}
 .prose .quote cite{color:var(--bronze-d)}
+
+footer img[src$="logo.png"]{height:96px;width:auto}
